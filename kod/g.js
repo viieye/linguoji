@@ -1,0 +1,234 @@
+var cache_register = new Array(16).fill(new Array(8).fill(0))
+var nands_used = 0
+
+function nand(a,b) {return 1-a*b}
+// function nand(a,b) {nands_used++;return 1-a*b}
+function not(a) {return nand(a,a)}
+function and(a,b) {let c=nand(a,b);return nand(c,c)}
+function or(a,b) {return nand(nand(a,a),nand(b,b))}
+function nor(a,b) {let d=nand(nand(a,a),nand(b,b));return nand(d,d)}
+function xor(a,b) {let c=nand(a,b);return nand(nand(a,c),nand(b,c))}
+//halfadder
+function had(a,b) {let c=nand(a,b);return [nand(nand(a,c),nand(b,c)),nand(c,c)]}
+function mul(a,b,c) {return nand(nand(a,nand(c,c)),nand(b,c))}
+//fulladder
+function fad(a,b,c) {
+    let d=nand(a,b);
+    let t=nand(nand(a,d),nand(b,d));
+    let f=nand(c,t);
+    return [nand(nand(c,f),nand(t,f)),nand(d,f)]
+}
+function fad_8b(a8b,b8b) {
+    let c = 0
+    let ans = new Array(8).fill(0)
+    for (let i = 0; i < 8; i++) {
+        let ans2 = fad(a8b[7-i]*1,b8b[7-i]*1,c)
+        ans[7-i]=ans2[0]
+        c=ans2[1]
+    }
+    return ans
+}
+function neg_8b(a8b) {
+    let ans = new Array(8).fill(0)
+    for (let i = 0; i < 8; i++) {
+        ans[7-i]=not(a8b[7-i])
+    }
+    return fad_8b(ans,[0,0,0,0,0,0,0,1])
+}
+function mul_8b(a8b,b8b,num) {
+    let ans = new Array(8).fill(0)
+    for (let i = 0; i < 8; i++) {
+        ans[7-i]=mul(a8b[7-i],b8b[7-i],num)
+    }
+    return ans
+}
+function alu(a,b,cout,d6b) {
+    let ans = mul(
+        fad(
+            mul(a,not(a),d6b[0]),
+            mul(b,not(b),d6b[1]),
+            mul(cout,1,d6b[3])
+        )[0],
+        xor(
+            or(
+                mul(a,not(a),d6b[0]),
+                mul(b,not(b),d6b[1]),
+            ),d6b[3]
+        ),
+        d6b[4]
+    )
+    return [ans,fad(mul(a,not(a),d6b[0]),mul(b,not(b),d6b[1]),mul(cout,1,d6b[3]))[1]]
+}
+function alu_8b(a8b,b8b,d6b) {
+    //0 flip a
+    //1 flip b
+    //2 c0=
+    //3 c=1 //makes it an xnor
+    //4 or
+    //5 rshift
+
+    let cout = d6b[2]
+    let ans = new Array(8).fill(0)
+    for (let i = 0; i < 8; i++) {
+        let loc = 7-i
+        let ans2 = alu(a8b[loc],b8b[loc],cout,d6b)
+        ans[7-i]=ans2[0]
+        cout=ans2[1]
+    }
+    let rans = [0]
+    for (let i = 0; i < 7; i++) {
+        rans.push(ans[i]*1)
+    }
+    return mul_8b(ans,rans,d6b[5])
+}
+
+function x4b2d5b(a4b) {
+    //000000 add
+    //011000 subtract
+    //000100 xnor/=
+    //010100 xor
+    //000010 or
+    //000110 nor
+    //110010 nand
+    //110110 and
+    //000001 shift rigth
+    //100010 implies
+    //100110 nimplies
+}
+
+function control_rom(i16b) {
+    console.log(i16b);
+    
+    //first 4 bits are opcode
+    let opp = [[[[
+        [0,0,0,0,0,0,0]//noop
+    ],[
+        [1,0,0,0,0,0,0],//add
+        [1,0,1,1,0,0,0]//subtract
+    ]],[[
+        [1,0,0,0,1,1,0],//nor
+        [1,1,1,0,1,1,0],//and
+    ],[
+        [1,0,1,0,1,0,0],//xor
+        [1,0,0,0,0,0,1],//rshift
+    ]]],[]]
+    
+    let ouropp = opp[i16b[0]][i16b[1]][i16b[2]][i16b[3]]
+    let registry = register(
+        num2e2_8b(0),
+        [i16b[4],i16b[5],i16b[6],i16b[7]],
+        [i16b[8],i16b[9],i16b[10],i16b[11]],
+        [i16b[12],i16b[13],i16b[14],i16b[15]],
+        0
+    )
+    register(
+        alu_8b(
+            registry[0],
+            registry[1],
+            [ouropp[1],ouropp[2],ouropp[3],ouropp[4],ouropp[5],ouropp[6]]
+        ),
+        [i16b[4],i16b[5],i16b[6],i16b[7]],
+        [i16b[8],i16b[9],i16b[10],i16b[11]],
+        [i16b[12],i16b[13],i16b[14],i16b[15]],
+        ouropp[0]
+    )
+}
+
+function register(d8b,a4b,b4b,c4b,e1b) {
+    cache_register[0].fill(0)
+    // i wouldhave put a nand mul here but its 4 bit and im lazy to make a mub4b for this
+    let r1 = b4b2dec(a4b)
+    let r2 = b4b2dec(b4b)
+
+    cache_register[b4b2dec(c4b)]=mul_8b(cache_register[b4b2dec(c4b)],d8b,e1b)
+    if (e1b==1) {
+        console.log(cache_register[b4b2dec(c4b)])
+        console.log([c4b,d8b])
+    }
+    cache_register[0].fill(0)
+    return [cache_register[r1],cache_register[r2]]
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function num2e2_8b(num) {
+    let ans = new Array(8).fill(0)
+    let num2 = num*1
+    for (let i = 0; i < 8; i++) {
+        ans[7-i]=num2%2
+        num2 = Math.floor(num2/2)
+    }
+    return ans
+}
+
+function b8b2dec(a8b) {
+    return 1*a8b[7]+2*a8b[6]+4*a8b[5]+8*a8b[4]+16*a8b[3]+32*a8b[2]+64*a8b[1]+128*a8b[0]
+}
+
+function b4b2dec(a4b) {
+    return 1*a4b[3]+2*a4b[2]+4*a4b[1]+8*a4b[0]
+}
+
+function compilero(codestring) {
+    //splits string into lines
+    let lines = codestring.split(",r")
+    let mechcode = []
+    for (let ind = 0; ind < lines.length; ind++) {
+        let text = lines[ind].split(",,")
+        let oppecode = "0000"
+        let reg1code = "0000"
+        let reg2code = "0000"
+        let reg3code = "0000"
+        if (text[0]=="ww") {
+            oppecode = "0010"
+        }
+        if (text[0]=="X,") {
+            oppecode = "0000"
+        }
+        if (text.length>1) {
+            let ans = emojto10(text[1])
+            if (ans>=cache_register.length) {
+                throw new Error("not enough registers");
+            }
+            reg1code = convnumer(ans, 2)
+        }
+        if (text.length>2) {
+            let ans = emojto10(text[1])
+            if (ans>=cache_register.length) {
+                throw new Error("not enough registers");
+            }
+            reg2code = convnumer(ans, 2)
+        }
+        if (text.length>3) {
+            let ans = emojto10(text[1])
+            if (ans>=cache_register.length) {
+                throw new Error("not enough registers");
+            }
+            reg3code = convnumer(ans, 2)
+        }
+        mechcode.push((oppecode+reg1code+reg2code+reg3code).split(""))
+    }
+    return mechcode
+}
+
+var anddress_memory = []
+
+function run_program() {
+    for (let i = 0; i < anddress_memory.length; i++) {
+        control_rom(anddress_memory[i])
+    }
+}
+

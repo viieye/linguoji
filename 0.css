@@ -1,0 +1,89 @@
+body {
+    background-color: #222;
+    color: #2fa;
+    margin: 0%;
+    font-family: fornt;
+}
+
+@font-face {
+    font-family: fornt;
+    src: url(NovaMono-Regular.ttf);
+}
+
+.ricegum {
+    display: flex;
+}
+
+.shaurma {
+    flex-wrap: wrap;
+}
+
+.key.special {
+    background-color:#153
+}
+
+.key {
+    border: #2fa 1px solid;
+    font-size: 32px;
+    text-wrap: nowrap;
+    text-align: center;
+    user-select: none;
+    cursor: pointer;
+    position: relative; /* Or absolute */
+    left: 0; /* Ensure it's on whole-pixel positions */
+    top: 0;
+    zoom: 0.8;
+}
+
+.key:hover {
+    background-color: #196;
+}
+
+.key:active {
+    background-color: #153;
+}
+
+#console {
+    max-height: 320px;
+    min-height: 320px;
+    width: 50%;
+    overflow-y: scroll;
+    display: flex;
+    /* flex-direction: column; */
+    flex-direction: column-reverse;
+}
+
+
+
+
+
+
+
+
+
+/* width */
+::-webkit-scrollbar {
+    width: 20px;
+    height: 20px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #185;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #222;
+    border: #2fa 2px solid;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #185;
+}
+
+::-webkit-scrollbar-corner {
+    background: #222;
+    border: #2fa 2px solid;
+}
