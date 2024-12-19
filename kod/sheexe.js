@@ -1,3 +1,4 @@
+// infotreearray = refactorDatatedtree(datatedtree)
 
 function shellExecute(command) {
     // console.log(bar);
@@ -18,7 +19,7 @@ function shellExecute(command) {
             if (Array.isArray(infotreearray[itemid][1])) {
                 addressloc=address
             } else {
-                return address + " is not a directory"
+                return address + "kXHrkwZYJw"
             }
         }
         return displayAddressLoc(addressloc,1)
@@ -160,7 +161,7 @@ function shellExecute(command) {
     // =w is vim/editor
     // /@ is help
     // ZY is subcomputer?
-
+    console.log(foncton)
     return "=m\",Jw"
 }
 

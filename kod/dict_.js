@@ -177,7 +177,7 @@ const ezchar_lexicon = [
     "111111",// ,
 ]
 
-var infotreearray = Binr2data()
+var datatedtree = conData2binr()
 
 function conData2binr() {
     let toxt = ""
@@ -185,4 +185,9 @@ function conData2binr() {
     for (let i = 0; i < infotreearray.length; i++) {
         toxt += el[64]+el[20]
     }
+    return toxt
 }
+
+function refactorDatatedtree(dataoftree) {
+    
+} 

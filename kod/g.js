@@ -35,6 +35,14 @@ function neg_8b(a8b) {
     }
     return fad_8b(ans,[0,0,0,0,0,0,0,1])
 }
+function cnc_8b(a4b,b4b) {return [a4b[0],a4b[1],a4b[2],a4b[3],b4b[0],b4b[1],b4b[2],b4b[3]]}
+function mul_4b(a4b,b4b,num) {
+    let ans = new Array(4).fill(0)
+    for (let i = 0; i < 4; i++) {
+        ans[3-i]=mul(a4b[3-i],b4b[3-i],num)
+    }
+    return ans
+}
 function mul_8b(a8b,b8b,num) {
     let ans = new Array(8).fill(0)
     for (let i = 0; i < 8; i++) {
@@ -66,6 +74,8 @@ function alu_8b(a8b,b8b,d6b) {
     //3 c=1 //makes it an xnor
     //4 or
     //5 rshift
+    //6 data mux
+    //7 destination mux to r1 not r3
 
     let cout = d6b[2]
     let ans = new Array(8).fill(0)
@@ -101,17 +111,19 @@ function control_rom(i16b) {
     
     //first 4 bits are opcode
     let opp = [[[[
-        [0,0,0,0,0,0,0]//noop
+        [0,0,0,0,0,0,0,0,0]//noop
     ],[
-        [1,0,0,0,0,0,0],//add
-        [1,0,1,1,0,0,0]//subtract
+        [1,0,0,0,0,0,0,0,0],//add
+        [1,0,1,1,0,0,0,0,0]//subtract
     ]],[[
-        [1,0,0,0,1,1,0],//nor
-        [1,1,1,0,1,1,0],//and
+        [1,0,0,0,1,1,0,0,0],//nor
+        [1,1,1,0,1,1,0,0,0],//and
     ],[
-        [1,0,1,0,1,0,0],//xor
-        [1,0,0,0,0,0,1],//rshift
-    ]]],[]]
+        [1,0,1,0,1,0,0,0,0],//xor
+        [1,0,0,0,0,0,1,0,0],//rshift
+    ]]],[[[
+        [1,0,0,0,0,0,0,1,1],//ldi
+    ]]]]
     
     let ouropp = opp[i16b[0]][i16b[1]][i16b[2]][i16b[3]]
     let registry = register(
@@ -119,28 +131,35 @@ function control_rom(i16b) {
         [i16b[4],i16b[5],i16b[6],i16b[7]],
         [i16b[8],i16b[9],i16b[10],i16b[11]],
         [i16b[12],i16b[13],i16b[14],i16b[15]],
-        0
+        0,0
     )
     register(
         alu_8b(
             registry[0],
             registry[1],
-            [ouropp[1],ouropp[2],ouropp[3],ouropp[4],ouropp[5],ouropp[6]]
+            [ouropp[1],ouropp[2],ouropp[3],ouropp[4],ouropp[5],ouropp[6],ouropp[7],ouropp[8]]
         ),
         [i16b[4],i16b[5],i16b[6],i16b[7]],
         [i16b[8],i16b[9],i16b[10],i16b[11]],
         [i16b[12],i16b[13],i16b[14],i16b[15]],
-        ouropp[0]
+        ouropp[0],[ouropp[7],ouropp[8]]
     )
 }
 
-function register(d8b,a4b,b4b,c4b,e1b) {
+function register(d8b,a4b,b4b,c4b,e1b,m2b) {
     cache_register[0].fill(0)
     // i wouldhave put a nand mul here but its 4 bit and im lazy to make a mub4b for this
     let r1 = b4b2dec(a4b)
     let r2 = b4b2dec(b4b)
 
-    cache_register[b4b2dec(c4b)]=mul_8b(cache_register[b4b2dec(c4b)],d8b,e1b)
+    cache_register[b4b2dec(c4b)]=
+        mul_8b(
+            cache_register[b4b2dec(mul_4b(c4b,a4b,m2b[1]))],
+            mul_8b(
+                d8b,
+                cnc_8b(b4b,c4b),
+                m2b[0]),
+            e1b);
     if (e1b==1) {
         console.log(cache_register[b4b2dec(c4b)])
         console.log([c4b,d8b])
@@ -148,13 +167,6 @@ function register(d8b,a4b,b4b,c4b,e1b) {
     cache_register[0].fill(0)
     return [cache_register[r1],cache_register[r2]]
 }
-
-
-
-
-
-
-
 
 
 
@@ -188,15 +200,33 @@ function compilero(codestring) {
     let mechcode = []
     for (let ind = 0; ind < lines.length; ind++) {
         let text = lines[ind].split(",,")
-        let oppecode = "0000"
-        let reg1code = "0000"
-        let reg2code = "0000"
-        let reg3code = "0000"
-        if (text[0]=="ww") {
+        let oppecode = "0000";
+        let reg1code = "0000";
+        let reg2code = "0000";
+        let reg3code = "0000";
+        if (text[0]=="X,") {//nop
+            oppecode = "0000"
+        }
+        if (text[0]=="ww") {//add
             oppecode = "0010"
         }
-        if (text[0]=="X,") {
-            oppecode = "0000"
+        if (text[0]=="wm") {//sub
+            oppecode = "0011"
+        }
+        if (text[0]=="X?") {//nor
+            oppecode = "0100"
+        }
+        if (text[0]=="m}") {//and
+            oppecode = "0101"
+        }
+        if (text[0]=="}H") {//xor
+            oppecode = "0110"
+        }
+        if (text[0]=="}F") {//rxf
+            oppecode = "0111"
+        }
+        if (text[0]=="6H") {//ldi
+            oppecode = "1000"
         }
         if (text.length>1) {
             let ans = emojto10(text[1])
@@ -206,14 +236,14 @@ function compilero(codestring) {
             reg1code = convnumer(ans, 2)
         }
         if (text.length>2) {
-            let ans = emojto10(text[1])
+            let ans = emojto10(text[2])
             if (ans>=cache_register.length) {
                 throw new Error("not enough registers");
             }
             reg2code = convnumer(ans, 2)
         }
         if (text.length>3) {
-            let ans = emojto10(text[1])
+            let ans = emojto10(text[3])
             if (ans>=cache_register.length) {
                 throw new Error("not enough registers");
             }
