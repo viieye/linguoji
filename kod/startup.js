@@ -4,7 +4,7 @@ function startup() {
     rows=[]
     bar=""
 
-    build_keyb(keyb2,'keyboard')
+    build_keyb(neokeyb,'keyboard')
     
     reindicate()
     build_keyb(numpadd,'numpad')

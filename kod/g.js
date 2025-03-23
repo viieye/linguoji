@@ -76,6 +76,7 @@ function alu_8b(a8b,b8b,d6b) {
     //5 rshift
     //6 data mux
     //7 destination mux to r1 not r3
+    //8 
 
     let cout = d6b[2]
     let ans = new Array(8).fill(0)

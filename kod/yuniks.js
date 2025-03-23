@@ -4,8 +4,15 @@ var hist = []
 var his2 = []
 var addressloc = "Hr,r6m,rz*^,"//,r to separate, ,r becomes kw
 var shift = 0
+var keybshift = [0,0]
 
 function sendcode(code) {
+    console.log(keybshift);
+        
+    //emptycode
+    if (code=="") {
+        return 0
+    }
     //backspace
     if (code==">,}E") {
         bar=bar.substring(0, bar.length - 1);
@@ -22,12 +29,24 @@ function sendcode(code) {
         updateconsole()
         return 0
     }
-    //shift
+    //cntrllock
     if (code=="=w") {
         let ns = shift
         if (ns==0) {shift=1}
         if (ns==1) {shift=2}
         if (ns==2) {shift=0}
+        reindicate()
+        return 0
+    }
+    //shift
+    if (code=="=J") {
+        keybshift[0]=1
+        reindicate()
+        return 0
+    }
+    //shiftlock
+    if (code=="=m=J") {
+        keybshift[1]=1-keybshift[1]
         reindicate()
         return 0
     }
@@ -56,6 +75,8 @@ function sendcode(code) {
     }
     //normal charcodes
     bar+=code
+    keybshift[0]=0
+    reindicate()
     updateconsole();
     return 0
 }
@@ -149,6 +170,11 @@ function reindicate() {
     let koyb = [...indiK]; // Shallow copy
     koyb[0] = [...koyb[0], [emojconvnumer(shift), "i", ["l", 3]]]; // Modify the copy safely
     build_keyb(koyb, 'ind');
+    if (keybshift[0]==keybshift[1]) {
+        build_keyb(neokeyb,'keyboard')
+    } else {
+        build_keyb(neokeybalt,'keyboard')
+    }
 }
 
 function lowershift() {
