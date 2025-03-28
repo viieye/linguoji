@@ -51,6 +51,7 @@ function mul_8b(a8b,b8b,num) {
     return ans
 }
 function alu(a,b,cout,d6b) {
+    //d6b is d10b now
     let ans = mul(
         fad(
             mul(a,not(a),d6b[0]),
@@ -67,7 +68,9 @@ function alu(a,b,cout,d6b) {
     )
     return [ans,fad(mul(a,not(a),d6b[0]),mul(b,not(b),d6b[1]),mul(cout,1,d6b[3]))[1]]
 }
-function alu_8b(a8b,b8b,d6b) {
+function alu_8b(a8b,b8b,d6b,c8b) {
+    //c8b is for dumping data in
+
     //0 flip a
     //1 flip b
     //2 c0=
@@ -77,12 +80,18 @@ function alu_8b(a8b,b8b,d6b) {
     //6 data mux
     //7 destination mux to r1 not r3
     //8 
+    //9 add data to b8b is now c8b?
 
     let cout = d6b[2]
     let ans = new Array(8).fill(0)
     for (let i = 0; i < 8; i++) {
         let loc = 7-i
-        let ans2 = alu(a8b[loc],b8b[loc],cout,d6b)
+        let ans2 = alu(
+            a8b[loc],
+            mul(b8b[loc],c8b[loc],d6b[9]),
+            cout,
+            d6b
+        )
         ans[7-i]=ans2[0]
         cout=ans2[1]
     }
@@ -112,18 +121,19 @@ function control_rom(i16b) {
     
     //first 4 bits are opcode
     let opp = [[[[
-        [0,0,0,0,0,0,0,0,0]//noop
+        [0,0,0,0,0,0,0,0,0,0]//noop
     ],[
-        [1,0,0,0,0,0,0,0,0],//add
-        [1,0,1,1,0,0,0,0,0]//subtract
+        [1,0,0,0,0,0,0,0,0,0],//add
+        [1,0,1,1,0,0,0,0,0,0]//subtract
     ]],[[
-        [1,0,0,0,1,1,0,0,0],//nor
-        [1,1,1,0,1,1,0,0,0],//and
+        [1,0,0,0,1,1,0,0,0,0],//nor
+        [1,1,1,0,1,1,0,0,0,0],//and
     ],[
-        [1,0,1,0,1,0,0,0,0],//xor
-        [1,0,0,0,0,0,1,0,0],//rshift
+        [1,0,1,0,1,0,0,0,0,0],//xor
+        [1,0,0,0,0,0,1,0,0,0],//rshift
     ]]],[[[
-        [1,0,0,0,0,0,0,1,1],//ldi
+        [1,0,0,0,0,0,0,1,1,0],//ldi
+        [1,0,0,0,0,0,0,0,0,1],//adi
     ]]]]
     
     let ouropp = opp[i16b[0]][i16b[1]][i16b[2]][i16b[3]]
@@ -132,33 +142,46 @@ function control_rom(i16b) {
         [i16b[4],i16b[5],i16b[6],i16b[7]],
         [i16b[8],i16b[9],i16b[10],i16b[11]],
         [i16b[12],i16b[13],i16b[14],i16b[15]],
-        0,0
+        0,0,0
     )
     register(
         alu_8b(
             registry[0],
             registry[1],
-            [ouropp[1],ouropp[2],ouropp[3],ouropp[4],ouropp[5],ouropp[6],ouropp[7],ouropp[8]]
+            [ouropp[1],ouropp[2],ouropp[3],ouropp[4],ouropp[5],ouropp[6],ouropp[7],ouropp[8],ouropp[9]],
+            [i16b[8],i16b[9],i16b[10],i16b[11],i16b[12],i16b[13],i16b[14],i16b[15]],    
         ),
         [i16b[4],i16b[5],i16b[6],i16b[7]],
         [i16b[8],i16b[9],i16b[10],i16b[11]],
         [i16b[12],i16b[13],i16b[14],i16b[15]],
-        ouropp[0],[ouropp[7],ouropp[8]]
+        ouropp[0],[ouropp[7],ouropp[8]],ouropp[9]
     )
 }
 
-function register(d8b,a4b,b4b,c4b,e1b,m2b) {
+function register(d8b,a4b,b4b,c4b,e1b,m2b,f1b) {
     cache_register[0].fill(0)
     // i wouldhave put a nand mul here but its 4 bit and im lazy to make a mub4b for this
+    //120250325: ???? huh? what is this about, binary to decimal?
     let r1 = b4b2dec(a4b)
     let r2 = b4b2dec(b4b)
 
+    //cache register resigters at b4b2dec(c4b) (linguoji numeral to nromal from 4bit-c-input)
+    //if e1b
+    ///cache register
+    ////if m2bit-N2
+    /////c4b
+    /////a4b
+    ///if m2bit-N1
+    ////if f1b
+    /////d8b
+
+    ////concat8bit b4bit ; c4bit
     cache_register[b4b2dec(c4b)]=
         mul_8b(
             cache_register[b4b2dec(mul_4b(c4b,a4b,m2b[1]))],
             mul_8b(
                 d8b,
-                cnc_8b(b4b,c4b),
+                cnc_8b(b4b,c4b),//this is LDI, it loads into file
                 m2b[0]),
             e1b);
     if (e1b==1) {

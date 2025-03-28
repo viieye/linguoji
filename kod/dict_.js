@@ -8,7 +8,7 @@ const digits0 = '0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()-_=+';
 const digits1 = [",","^","F","+","4","5","z","g"];
 const digits2 = [",","~","#","*","9",];
 
-var stringver = 0
+var stringver = 2
 const stringvers = 3
 function cyclestringver() {stringver++;stringver=stringver%stringvers;return stringver}
 

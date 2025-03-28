@@ -38,8 +38,8 @@ const neokeyb = [
     [["=m=J","s",["l",1.75]],["<","s"],["r","s"],[">","s"],["m","s"],["w","s"],
     ["E"],["k"],["p"],["q"],["8"],["N"],[">,7,",["l",3.25],"s"],],
     [["=J","s",["l",2.25]],["(","s"],["F","s"],["J","s"],["L","s"],
-    ["u"],["3"],["H"],[";"],["?"],],
-    [[",",["l",5.5],["g",4]]],
+    ["u"],["3"],["H"],[";"],[":"],["?"],],
+    [[""],[""],[""],[""],[",",["l",5.5],]],
 ]
 const neokeybalt = [
     [[""],[""],["7","s"],
@@ -51,7 +51,7 @@ const neokeybalt = [
     ["\""],["z"],["M"],["'"],["O"],["Q"],["",["l",3.25],"s"],],
     [["","s",["l",2.25]],["b","s"],[""],[""],[""],[""],
     [""],[""],[""],[""],[""],],
-    [[",",["l",5.5],["g",4]]],
+    [[""],[""],[""],[""],[",",["l",5.5],]],
 ]
 
 const numpadd = [
@@ -144,7 +144,7 @@ const keybcodes = [
     ["Backquote","Digit1","Digit2","Digit3","Digit4","Digit5","Digit6",
     "Digit7","Digit8","Digit9","Digit0","Minus","Equal","Backspace",],
     ["Tab","KeyQ","KeyW","KeyE","KeyR","KeyT","KeyY","KeyU","KeyI",
-    "KeyO","KeyP","BracketLeft","BracketRight","Backslash"],
+    "KeyO","KeyP","BracketLeft","BracketRight","Backslash","Delete"],
     ["CapsLock","KeyA","KeyS","KeyD","KeyF","KeyG","KeyH",
     "KeyJ","KeyK","KeyL","Semicolon","Quote","Enter"],
     ["ShiftLeft","KeyZ","KeyX","KeyC","KeyV","KeyB","KeyN",

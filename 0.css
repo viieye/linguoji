@@ -7,7 +7,7 @@ body {
 
 @font-face {
     font-family: fornt;
-    src: url(NovaMono-Regular.ttf);
+    src: url(Emojfont2.ttf);
 }
 
 .ricegum {
@@ -24,7 +24,7 @@ body {
 
 .key {
     border: #2fa 1px solid;
-    font-size: 32px;
+    font-size: 40px;
     text-wrap: nowrap;
     text-align: center;
     user-select: none;
@@ -49,6 +49,7 @@ body {
     width: 50%;
     overflow-y: scroll;
     display: flex;
+    font-size: 25px;
     /* flex-direction: column; */
     flex-direction: column-reverse;
 }
