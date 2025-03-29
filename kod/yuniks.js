@@ -53,6 +53,7 @@ function sendcode(code) {
     //cycle
     if (code==">,*,=w") {
         cyclestringver()
+        updatebodyfont()
         updateconsole()
         build_keyb(keyb,'keyboard')
         build_keyb(numpadd,'numpad')
@@ -79,6 +80,14 @@ function sendcode(code) {
     reindicate()
     updateconsole();
     return 0
+}
+
+function updatebodyfont() {
+    if (stringver==2) {
+        document.getElementsByTagName("body")[0].style.fontFamily = "fornt"
+    } else {
+        document.getElementsByTagName("body")[0].style.fontFamily = "fallbackfornt"
+    }
 }
 
 function updateconsole() {

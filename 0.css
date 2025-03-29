@@ -6,6 +6,11 @@ body {
 }
 
 @font-face {
+    font-family: fallbackfornt;
+    src: url(NovaMono-Regular.ttf);
+}
+
+@font-face {
     font-family: fornt;
     src: url(Emojfont2.ttf);
 }
@@ -49,7 +54,6 @@ body {
     width: 50%;
     overflow-y: scroll;
     display: flex;
-    font-size: 25px;
     /* flex-direction: column; */
     flex-direction: column-reverse;
 }
