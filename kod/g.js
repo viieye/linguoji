@@ -220,10 +220,10 @@ function b4b2dec(a4b) {
 
 function compilero(codestring) {
     //splits string into lines
-    let lines = codestring.split(",r")
+    let lines = couplensplit(codestring,",r",1)
     let mechcode = []
     for (let ind = 0; ind < lines.length; ind++) {
-        let text = lines[ind].split(",,")
+        let text = couplensplit(lines[ind],",,",1)
         let oppecode = "0000";
         let reg1code = "0000";
         let reg2code = "0000";
@@ -252,26 +252,38 @@ function compilero(codestring) {
         if (text[0]=="6H") {//ldi
             oppecode = "1000"
         }
+        if (text[0]=="J*") {//adi
+            oppecode = "1001"
+        }
         if (text.length>1) {
             let ans = emojto10(text[1])
             if (ans>=cache_register.length) {
                 throw new Error("not enough registers");
             }
-            reg1code = convnumer(ans, 2)
+            reg1code = paduntilleng(convnumer(ans, 2),"0",4)
         }
         if (text.length>2) {
             let ans = emojto10(text[2])
             if (ans>=cache_register.length) {
                 throw new Error("not enough registers");
             }
-            reg2code = convnumer(ans, 2)
+            reg2code = paduntilleng(convnumer(ans, 2),"0",4)
         }
         if (text.length>3) {
             let ans = emojto10(text[3])
             if (ans>=cache_register.length) {
                 throw new Error("not enough registers");
             }
-            reg3code = convnumer(ans, 2)
+            reg3code = paduntilleng(convnumer(ans, 2),"0",4)
+        }
+        //pesudocodes
+        if (text[0]=="{F") {//lxf
+            //uses add of the same 2 numbers and 
+            oppecode = "0010"
+            let ans = emojto10(text[1])
+            reg1code = paduntilleng(convnumer(ans, 2),"0",4)
+            reg2code = paduntilleng(convnumer(ans, 2),"0",4)
+            reg3code = paduntilleng(convnumer(ans, 2),"0",4)
         }
         mechcode.push((oppecode+reg1code+reg2code+reg3code).split(""))
     }
@@ -284,5 +296,6 @@ function run_program() {
     for (let i = 0; i < anddress_memory.length; i++) {
         control_rom(anddress_memory[i])
     }
+    console.log(cache_register);
 }
 

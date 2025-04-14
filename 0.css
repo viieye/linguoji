@@ -54,6 +54,7 @@ body {
     width: 50%;
     overflow-y: scroll;
     display: flex;
+    font-size: 25px;
     /* flex-direction: column; */
     flex-direction: column-reverse;
 }

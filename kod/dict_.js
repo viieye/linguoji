@@ -9,7 +9,7 @@ const digits1 = [",","^","F","+","4","5","z","g"];
 const digits2 = [",","~","#","*","9",];
 
 var stringver = 2
-const stringvers = 3
+const stringvers = 4
 function cyclestringver() {stringver++;stringver=stringver%stringvers;return stringver}
 
 function convchar(char) {
@@ -52,6 +52,13 @@ function convnumer(decnum, radix) {
     return result || '0'; // Handle the case for input 0
 }
 
+function paduntilleng(stringtopad,padtype,leng) {
+    for (let i = stringtopad.length; i < leng; i++) {
+        stringtopad=padtype+stringtopad
+    }
+    return stringtopad
+}
+
 //((num==0)?"d,":(num/8<1)?digits1[num%8]+",":digits2[Math.floor(num/8)]+digits1[num%8])
 const digits40 = ["d,","^,","F,","+,","4,","5,","z,","g,","~,","~^","~F","~+","~4","~5","~z","~g","#,","#^","#F","#+","#4","#5","#z","#g","*,","*^","*F","*+","*4","*5","*z","*g","9,","9^","9F","9+","94","95","9z","9g",]
 
@@ -73,17 +80,30 @@ function coupleEmojs(string) {
     return couples;
 }
 
-function coupleSplit(couplearray,tomatch) {
+function coupleSplit(couplearray,tomatch,ifconcat) {
     let resuarray = []
     let subarray = []
     for (let i = 0; i < couplearray.length; i++) {
         if (couplearray[i]==tomatch) {
-            resuarray.push(subarray)
+            let altsubaray = subarray
+            if (ifconcat==1) {
+                altsubaray = konkat(subarray)
+            }
+            resuarray.push(altsubaray)
             subarray = []
         } else {
             subarray.push(couplearray[i])
         }
     }
+    if (ifconcat==1) {
+        subarray = konkat(subarray)
+    }
+    resuarray.push(subarray)
+    return resuarray
+}
+
+function couplensplit(string,tomatch,ifconcat) {
+    return coupleSplit(coupleEmojs(string),tomatch,ifconcat)
 }
 
 function emojto10(emojnum) {

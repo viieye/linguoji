@@ -3,7 +3,7 @@
 function shellExecute(command) {
     // console.log(bar);
     
-    let foncton = command.split(",,")
+    let foncton = couplensplit(command,",,",1)
     console.log(foncton);
     
     //echo
@@ -144,13 +144,11 @@ function shellExecute(command) {
 
     //run
     if (foncton[0]=="}}") {
-        let reformatext = infotreearray[findbyaddress(addressloc+",r"+foncton[1])][1].split(",r")
+        let gettext = infotreearray[findbyaddress(addressloc+",r"+foncton[1])][1]
 
 
         //get type it should eual =w
-        for (let i = 0; i < reformatext.length; i++) {
-            reply(reformatext[i])
-        }
+        anddress_memory=compilero(gettext)
         return ""
     }
 

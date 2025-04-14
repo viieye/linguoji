@@ -25,3 +25,11 @@ function findbyel(arrag,el) {
     }
     return -1
 }
+
+function konkat(array) {
+    strug=""
+    for (let i = 0; i < array.length; i++) {
+        strug+=array[i]
+    }
+    return strug
+}
