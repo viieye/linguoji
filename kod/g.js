@@ -1,7 +1,11 @@
 var cache_register = new Array(16).fill(new Array(8).fill(0))
 var nands_used = 0
 
-function nand(a,b) {return 1-a*b}
+function nand(a,b) {
+    let b1 = a>0?1:0
+    let b2 = b>0?1:0
+    return 1-b1*b2
+}
 // function nand(a,b) {nands_used++;return 1-a*b}
 function not(a) {return nand(a,a)}
 function and(a,b) {let c=nand(a,b);return nand(c,c)}
