@@ -1,4 +1,5 @@
 var cache_register = new Array(16).fill(new Array(8).fill(0))
+var great_register = new Array(256).fill(new Array(8).fill(0))
 var nands_used = 0
 
 function nand(a,b) {
@@ -226,14 +227,21 @@ function compilero(codestring) {
     //splits string into lines
     let lines = couplensplit(codestring,",r",1)
     let mechcode = []
-    for (let ind = 0; ind < lines.length; ind++) {
-        let text = couplensplit(lines[ind],",,",1)
+    for (let ind = 0; ind < 1024; ind++) {
+        let text = "X,"
+        console.log(lines[ind])
+        if (typeof lines[ind] != "undefined") {
+            text = couplensplit(lines[ind],",,",1)
+        }
         let oppecode = "0000";
         let reg1code = "0000";
         let reg2code = "0000";
         let reg3code = "0000";
         if (text[0]=="X,") {//nop
             oppecode = "0000"
+        }
+        if (text[0]=="}E") {//hlt
+            oppecode = "0001"
         }
         if (text[0]=="ww") {//add
             oppecode = "0010"
@@ -261,25 +269,35 @@ function compilero(codestring) {
         }
         if (text.length>1) {
             let ans = emojto10(text[1])
-            if (ans>=cache_register.length) {
-                throw new Error("not enough registers");
-            }
             reg1code = paduntilleng(convnumer(ans, 2),"0",4)
         }
         if (text.length>2) {
             let ans = emojto10(text[2])
-            if (ans>=cache_register.length) {
-                throw new Error("not enough registers");
-            }
             reg2code = paduntilleng(convnumer(ans, 2),"0",4)
         }
         if (text.length>3) {
             let ans = emojto10(text[3])
-            if (ans>=cache_register.length) {
-                throw new Error("not enough registers");
-            }
             reg3code = paduntilleng(convnumer(ans, 2),"0",4)
         }
+
+        //semipseudocodes
+        if (text[0]=="6H") {//ldi
+            oppecode = "1000"
+            let ans = emojto10(text[1])
+            reg1code = paduntilleng(convnumer(ans, 2),"0",4)
+            ans = emojto10(text[2])
+            reg2code = paduntilleng(convnumer(Math.floor(ans/256), 2),"0",4)
+            reg3code = paduntilleng(convnumer(ans%256, 2),"0",4)
+        }
+        if (text[0]=="J*") {//adi
+            oppecode = "1001"
+            let ans = emojto10(text[1])
+            reg1code = paduntilleng(convnumer(ans, 2),"0",4)
+            ans = emojto10(text[2])
+            reg2code = paduntilleng(convnumer(Math.floor(ans/256), 2),"0",4)
+            reg3code = paduntilleng(convnumer(ans%256, 2),"0",4)
+        }
+
         //pesudocodes
         if (text[0]=="{F") {//lxf
             //uses add of the same 2 numbers and 
@@ -293,10 +311,11 @@ function compilero(codestring) {
     }
     return mechcode
 }
-
-var anddress_memory = []
+var codr = "6H,,z*^,,,z*^,"
+var anddress_memory = compilero(codr)
 
 function run_program() {
+    let p10b = 0
     for (let i = 0; i < anddress_memory.length; i++) {
         control_rom(anddress_memory[i])
     }

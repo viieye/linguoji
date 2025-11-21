@@ -108,11 +108,9 @@ function couplensplit(string,tomatch,ifconcat) {
 
 function emojto10(emojnum) {
     let numar = coupleEmojs(emojnum)
-    console.log(numar);
     if (numar[0]=!"z*") {
         numar.unshift("z*");
     }
-    console.log(numar);
     
     let num = 0
     numar=numar.reverse()

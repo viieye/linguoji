@@ -10,4 +10,5 @@ function startup() {
     build_keyb(numpadd,'numpad')
 
     updateconsole();
+    anddress_memory = compilero(codr)
 }
