@@ -229,7 +229,7 @@ function compilero(codestring) {
     let mechcode = []
     for (let ind = 0; ind < 5; ind++) {
         let text = "X,"
-        if (typeof lines[ind] != "undefined") {
+        if (typeof lines[ind] != "undefined" || lines[ins]!="") {
             text = couplensplit(lines[ind],",,",1)
         }
         console.log(text)
@@ -270,17 +270,14 @@ function compilero(codestring) {
         if (text.length>1) {
             let ans = emojto10(text[1])
             reg1code = paduntilleng(convnumer(ans, 2),"0",4)
-            console.log(ans);
         }
         if (text.length>2) {
             let ans = emojto10(text[2])
             reg2code = paduntilleng(convnumer(ans, 2),"0",4)
-            console.log(ans);
         }
         if (text.length>3) {
             let ans = emojto10(text[3])
             reg3code = paduntilleng(convnumer(ans, 2),"0",4)
-            console.log(ans);
         }
 
         //semipseudocodes
@@ -288,9 +285,7 @@ function compilero(codestring) {
             oppecode = "1000"
             let ans = emojto10(text[1])
             reg1code = paduntilleng(convnumer(ans, 2),"0",4)
-            console.log(ans);
             ans = emojto10(text[2])
-            console.log(ans);
             reg2code = paduntilleng(convnumer(Math.floor(ans/256), 2),"0",4)
             reg3code = paduntilleng(convnumer(ans%256, 2),"0",4)
         }
@@ -318,19 +313,17 @@ function compilero(codestring) {
     }
     return mechcode
 }
-var codr = "6H,,z*^,,,z*^,"
+var codr = ""
 var anddress_memory = []
 
 function run_program() {
-    console.log("compiling")
-    anddress_memory = compilero(codr)
-
-    console.log("running")
     let p10b = 0
     for (let i = 0; i < anddress_memory.length; i++) {
         control_rom(anddress_memory[i])
     }
     // console.log(cache_register);
+    printreg(cache_register)
+    printreg(great_register)
 }
 
 // setTimeout(run_program,500)
@@ -343,34 +336,27 @@ var hex = [[
 ]]
 
 function bindisphx(binar) {
-    // console.log(binar);
     let bu4 = []
     let ans = ""
     let i=0
     while (i<binar.length) {
         bu4.push(binar[i])
-        // console.log(bu4);
         if (bu4.length==4) {
-        ans += hex[bu4[0]][bu4[1]][bu4[2]][bu4[3]]
-        bu4=[]
+            ans += hex[bu4[0]][bu4[1]][bu4[2]][bu4[3]]
+            bu4=[]
         }
         i++
     }
     if (bu4.length!=0) {
-        let altbu = []
-        altbu= bu4.reverse()
-        while (altbu.length<4) {
-        altbu.push(0)
+        while (bu4.length<4) {
+            bu4.unshift(0)
         }
-        bu4=altbu.reverse()
         ans += hex[bu4[0]][bu4[1]][bu4[2]][bu4[3]]
     }
     return ans
 }
 
-function printreg() {
-    let regisron = cache_register
-    // let regisron = great_register
+function printreg(regisron) {
     let anstx = ""
     let i = 0
     while (i<regisron.length) {
@@ -381,5 +367,3 @@ function printreg() {
     }  
     console.log(anstx)
 }
-
-setTimeout(printreg,505)

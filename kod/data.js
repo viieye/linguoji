@@ -1,1 +1,8 @@
-var infotreearray = [["Hr",["6m","Hr"]],["Hr,r6m",["z*^,"]],["Hr,r6m,rz*^,",["k:Y@,^/7","k:=@,^=m"]],["Hr,r6m,rz*^,,rk:Y@,^/7","6,>,kwY/}},r>,MxJw,ru7E/Jw,r>,MxJwkLu7kwZYE/Jw,r6,kX9@kwZYJw,rk:EE"],["Hr,rHr",[]],["Hr,r6m,rz*^,,rk:=@,^=w",""]]
+var infotreearray = [["Hr",["6m","Hr"]],
+["Hr,r6m",["z*^,"]],
+["Hr,r6m,rz*^,",["k:Y@,^/7","k:=@,^=w","=m"]],
+["Hr,r6m,rz*^,,rk:Y@,^/7","6,>,kwY/}},r>,MxJw,ru7E/Jw,r>,MxJwkLu7kwZYE/Jw,r6,kX9@kwZYJw,rk:EE"],
+["Hr,rHr",[]],
+["Hr,r6m,rz*^,,rk:=@,^=w","6H,,z*^,,,z*^,"],
+["Hr,r6m,rz*^,,r=m","6H,,z*^,,,z*^,,r}E,,z*^,,,z*F,,,z*+,,r}E,,z*^,,,z*+,,,z*F,"],
+]

@@ -7,7 +7,7 @@ var shift = 0
 var keybshift = [0,0]
 
 function sendcode(code) {
-    console.log(keybshift);
+    // console.log(keybshift);
         
     //emptycode
     if (code=="") {

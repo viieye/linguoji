@@ -37,9 +37,9 @@ function shellExecute(command) {
         }
         let arrayid = findbyaddress(address)
         for (let i = 0; i < infotreearray[arrayid][1].length; i++) {
-            let itemid = findbyaddress(address+",r"+infotreearray[arrayid][1][i])
-            console.log(itemid);
-            
+            let itemaddr = address+",r"+infotreearray[arrayid][1][i]
+            let itemid = findbyaddress(itemaddr)
+            console.log(itemaddr,itemid);
             if (Array.isArray(infotreearray[itemid][1])) {
                 reply(infotreearray[itemid][0].split(",r").pop()+ " Hr")
             } else {
@@ -69,7 +69,11 @@ function shellExecute(command) {
     }
     //save
     if (foncton[0]=="}w") {
-        let data = `var infotreearray = `+ JSON.stringify(infotreearray)
+        let data = `var infotreearray = [`
+        for (let i = 0; i < infotreearray.length; i++) {
+            data += JSON.stringify(infotreearray[i])+",\n"
+        }
+        data += `]`
         let type = 'text/plain'
         let filename = "data.js"
         var file = new Blob([data], {type: type});
@@ -111,7 +115,7 @@ function shellExecute(command) {
         let day = 86400000
         let ans = Math.floor(unixdate%year/day)
         reply(emojconvnumer(ans)+"5*")
-        reply(emojconvnumer(Math.floor(unixdate/year)+11970)+"5(")
+        reply(emojconvnumer(Math.floor(unixdate/year)+13170)+"5(")
         return ""
     }
 
@@ -149,6 +153,7 @@ function shellExecute(command) {
 
         //get type it should eual =w
         anddress_memory=compilero(gettext)
+        run_program()
         return ""
     }
 

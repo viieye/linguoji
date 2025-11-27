@@ -33,7 +33,7 @@ const neokeyb = [
     [[""],[""],["7","s"],
     ["0"],["e"],["f"],["!"],["+"],["4"],["5"],["&"],["X"],["9"],[">,}E",["l",3],"s"],],
     
-    [["",["l",1.5]],["{","s"],["^","s"],["}","s"],["y","s"],["x","s",["a","%"]],
+    [["",["l",1.5]],["{","s"],["^","s"],["}","s"],["y","s"],["x","s",],
     ["="],["Y"],["@"],["o"],["/"],["Z"],["~"],["6"],["=w","s",["l",1.5]],],
     [["=m=J","s",["l",1.75]],["<","s"],["r","s"],[">","s"],["m","s"],["w","s"],
     ["E"],["k"],["p"],["q"],["8"],["N"],[">,7,",["l",3.25],"s"],],
@@ -159,7 +159,7 @@ window.addEventListener(
         for (let ind = 0; ind < keybcodes.length; ind++) {
             for (let i = 0; i < keybcodes[ind].length; i++) {
                 if (event.code == keybcodes[ind][i]) {
-                    console.log(keybcodes[ind][i]+" "+ind+";"+i);
+                    // console.log(keybcodes[ind][i]+" "+ind+";"+i);
                     
                     document.getElementById("keyboard").children[ind].children[i].click()
                     //get keybcode loc
