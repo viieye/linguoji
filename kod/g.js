@@ -312,9 +312,12 @@ function compilero(codestring) {
     return mechcode
 }
 var codr = "6H,,z*^,,,z*^,"
-var anddress_memory = compilero(codr)
+var anddress_memory = []
 
 function run_program() {
+  console.log("compiling")
+    anddress_memory = compilero(codr)
+
     let p10b = 0
     for (let i = 0; i < anddress_memory.length; i++) {
         control_rom(anddress_memory[i])
@@ -322,3 +325,49 @@ function run_program() {
     console.log(cache_register);
 }
 
+setTimeout(run_program,500)
+
+var hex = [[
+  [["0","1"],["2","3"]],
+  [["4","5"],["6","7"]]],
+  [[["8","9"],["A","B"]],
+  [["C","D"],["E","F"]]
+]]
+
+function bindisphx(binar) {
+  let bu4 = []
+  let ans = ""
+  let i=0
+  while (i<binar.length) {
+    bu4.push(binar[i])
+    if (bu4.length==4) {
+      ans += hex[bu4[0]][bu4[1]][bu4[2]][bu4[3]]
+      bu4=[]
+    }
+    i++
+  }
+  if (bu4.length!=0) {
+    let altbu = []
+    altbu= bu4.reverse()
+    while (altbu.length<4) {
+      altbu.push(0)
+    }
+    bu4=altbu.reverse()
+    ans += hex[bu4[0]][bu4[1]][bu4[2]][bu4[3]]
+  }
+  return ans
+}
+
+function printreg() {
+  let anstx = ""
+  let i = 0
+  while (i<cache_register.length) {
+    anstx += bindisphx(cache_register[i])
+    if (i%4==3) {anstx+=" "}
+    if (i%16==15) {anstx+="\n"}
+    i++
+  }  
+  console.log(anstx)
+}
+
+setTimeout(printreg,505)
