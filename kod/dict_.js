@@ -108,13 +108,12 @@ function couplensplit(string,tomatch,ifconcat) {
 
 function emojto10(emojnum) {
     let numar = coupleEmojs(emojnum)
-    if (numar[0]=!"z*") {
-        numar.unshift("z*");
-    }
-    
+    // if (numar[0]=!"z*") {
+    //     numar.unshift("z*");
+    // }
     let num = 0
     numar=numar.reverse()
-    for (let i = 1; i < numar.length; i++) {
+    for (let i = 0; i < numar.length - 1; i++) {
         num+=findbyel(digits40,numar[i])*40**i
     }
     return num

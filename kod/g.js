@@ -122,7 +122,7 @@ function x4b2d5b(a4b) {
 }
 
 function control_rom(i16b) {
-    console.log(i16b);
+    console.log(bindisphx(i16b));
     
     //first 4 bits are opcode
     let opp = [[[[
@@ -227,12 +227,12 @@ function compilero(codestring) {
     //splits string into lines
     let lines = couplensplit(codestring,",r",1)
     let mechcode = []
-    for (let ind = 0; ind < 1024; ind++) {
+    for (let ind = 0; ind < 5; ind++) {
         let text = "X,"
-        console.log(lines[ind])
         if (typeof lines[ind] != "undefined") {
             text = couplensplit(lines[ind],",,",1)
         }
+        console.log(text)
         let oppecode = "0000";
         let reg1code = "0000";
         let reg2code = "0000";
@@ -261,23 +261,26 @@ function compilero(codestring) {
         if (text[0]=="}F") {//rxf
             oppecode = "0111"
         }
-        if (text[0]=="6H") {//ldi
-            oppecode = "1000"
-        }
-        if (text[0]=="J*") {//adi
-            oppecode = "1001"
-        }
+        // if (text[0]=="6H") {//ldi
+        //     oppecode = "1000"
+        // }
+        // if (text[0]=="J*") {//adi
+        //     oppecode = "1001"
+        // }
         if (text.length>1) {
             let ans = emojto10(text[1])
             reg1code = paduntilleng(convnumer(ans, 2),"0",4)
+            console.log(ans);
         }
         if (text.length>2) {
             let ans = emojto10(text[2])
             reg2code = paduntilleng(convnumer(ans, 2),"0",4)
+            console.log(ans);
         }
         if (text.length>3) {
             let ans = emojto10(text[3])
             reg3code = paduntilleng(convnumer(ans, 2),"0",4)
+            console.log(ans);
         }
 
         //semipseudocodes
@@ -285,7 +288,9 @@ function compilero(codestring) {
             oppecode = "1000"
             let ans = emojto10(text[1])
             reg1code = paduntilleng(convnumer(ans, 2),"0",4)
+            console.log(ans);
             ans = emojto10(text[2])
+            console.log(ans);
             reg2code = paduntilleng(convnumer(Math.floor(ans/256), 2),"0",4)
             reg3code = paduntilleng(convnumer(ans%256, 2),"0",4)
         }
@@ -307,7 +312,9 @@ function compilero(codestring) {
             reg2code = paduntilleng(convnumer(ans, 2),"0",4)
             reg3code = paduntilleng(convnumer(ans, 2),"0",4)
         }
-        mechcode.push((oppecode+reg1code+reg2code+reg3code).split(""))
+        let fullcode = (oppecode+reg1code+reg2code+reg3code).split("")
+        console.log(bindisphx(fullcode));
+        mechcode.push(fullcode)
     }
     return mechcode
 }
@@ -315,59 +322,64 @@ var codr = "6H,,z*^,,,z*^,"
 var anddress_memory = []
 
 function run_program() {
-  console.log("compiling")
+    console.log("compiling")
     anddress_memory = compilero(codr)
 
+    console.log("running")
     let p10b = 0
     for (let i = 0; i < anddress_memory.length; i++) {
         control_rom(anddress_memory[i])
     }
-    console.log(cache_register);
+    // console.log(cache_register);
 }
 
-setTimeout(run_program,500)
+// setTimeout(run_program,500)
 
 var hex = [[
-  [["0","1"],["2","3"]],
-  [["4","5"],["6","7"]]],
-  [[["8","9"],["A","B"]],
-  [["C","D"],["E","F"]]
+    [["0","1"],["2","3"]],
+    [["4","5"],["6","7"]]],
+    [[["8","9"],["A","B"]],
+    [["C","D"],["E","F"]]
 ]]
 
 function bindisphx(binar) {
-  let bu4 = []
-  let ans = ""
-  let i=0
-  while (i<binar.length) {
-    bu4.push(binar[i])
-    if (bu4.length==4) {
-      ans += hex[bu4[0]][bu4[1]][bu4[2]][bu4[3]]
-      bu4=[]
+    // console.log(binar);
+    let bu4 = []
+    let ans = ""
+    let i=0
+    while (i<binar.length) {
+        bu4.push(binar[i])
+        // console.log(bu4);
+        if (bu4.length==4) {
+        ans += hex[bu4[0]][bu4[1]][bu4[2]][bu4[3]]
+        bu4=[]
+        }
+        i++
     }
-    i++
-  }
-  if (bu4.length!=0) {
-    let altbu = []
-    altbu= bu4.reverse()
-    while (altbu.length<4) {
-      altbu.push(0)
+    if (bu4.length!=0) {
+        let altbu = []
+        altbu= bu4.reverse()
+        while (altbu.length<4) {
+        altbu.push(0)
+        }
+        bu4=altbu.reverse()
+        ans += hex[bu4[0]][bu4[1]][bu4[2]][bu4[3]]
     }
-    bu4=altbu.reverse()
-    ans += hex[bu4[0]][bu4[1]][bu4[2]][bu4[3]]
-  }
-  return ans
+    return ans
 }
 
 function printreg() {
-  let anstx = ""
-  let i = 0
-  while (i<cache_register.length) {
-    anstx += bindisphx(cache_register[i])
-    if (i%4==3) {anstx+=" "}
-    if (i%16==15) {anstx+="\n"}
-    i++
-  }  
-  console.log(anstx)
+    let regisron = cache_register
+    // let regisron = great_register
+    let anstx = ""
+    let i = 0
+    while (i<regisron.length) {
+        anstx += bindisphx(regisron[i])
+        if (i%4==3) {anstx+=" "}
+        if (i%16==15) {anstx+="\n"}
+        i++
+    }  
+    console.log(anstx)
 }
 
 setTimeout(printreg,505)
