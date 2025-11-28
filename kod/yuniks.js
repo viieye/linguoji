@@ -1,6 +1,6 @@
 var bar = ""
 var rows = []
-var hist = []
+var hist = ["}},,=m"]
 var his2 = []
 var addressloc = "Hr,r6m,rz*^,"//,r to separate, ,r becomes kw
 var shift = 0

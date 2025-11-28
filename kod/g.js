@@ -1,6 +1,7 @@
 var cache_register = new Array(16).fill(new Array(8).fill(0))
 var great_register = new Array(256).fill(new Array(8).fill(0))
 var nands_used = 0
+var compu_pntr = [0]
 
 function nand(a,b) {
     let b1 = a>0?1:0
@@ -122,8 +123,6 @@ function x4b2d5b(a4b) {
 }
 
 function control_rom(i16b) {
-    console.log(bindisphx(i16b));
-    
     //first 4 bits are opcode
     let opp = [[[[
         [0,0,0,0,0,0,0,0,0,0]//noop
@@ -142,6 +141,9 @@ function control_rom(i16b) {
     ]]]]
     
     let ouropp = opp[i16b[0]][i16b[1]][i16b[2]][i16b[3]]
+    console.log(bindisphx(i16b));
+    // console.log([i16b[0],i16b[1],i16b[2],i16b[3]]+" ");
+    // console.log(opp[i16b[0]][i16b[1]][i16b[2]][i16b[3]]+" ");
     let registry = register(
         num2e2_8b(0),
         [i16b[4],i16b[5],i16b[6],i16b[7]],
@@ -164,9 +166,12 @@ function control_rom(i16b) {
 }
 
 function register(d8b,a4b,b4b,c4b,e1b,m2b,f1b) {
-    cache_register[0].fill(0)
     // i wouldhave put a nand mul here but its 4 bit and im lazy to make a mub4b for this
     //120250325: ???? huh? what is this about, binary to decimal?
+    //120251128: its about using cash register fill 0 
+    cache_register[0].fill(0)
+
+
     let r1 = b4b2dec(a4b)
     let r2 = b4b2dec(b4b)
 
@@ -189,10 +194,8 @@ function register(d8b,a4b,b4b,c4b,e1b,m2b,f1b) {
                 cnc_8b(b4b,c4b),//this is LDI, it loads into file
                 m2b[0]),
             e1b);
-    if (e1b==1) {
-        console.log(cache_register[b4b2dec(c4b)])
-        console.log([c4b,d8b])
-    }
+    // console.log(cache_register[b4b2dec(c4b)])
+    // console.log([c4b,d8b])
     cache_register[0].fill(0)
     return [cache_register[r1],cache_register[r2]]
 }
@@ -227,9 +230,9 @@ function compilero(codestring) {
     //splits string into lines
     let lines = couplensplit(codestring,",r",1)
     let mechcode = []
-    for (let ind = 0; ind < 5; ind++) {
-        let text = "X,"
-        if (typeof lines[ind] != "undefined" || lines[ins]!="") {
+    for (let ind = 0; ind < 256; ind++) {
+        let text = ["X,"]
+        if (typeof lines[ind] != "undefined" && lines[ind]!="") {
             text = couplensplit(lines[ind],",,",1)
         }
         console.log(text)
@@ -308,6 +311,9 @@ function compilero(codestring) {
             reg3code = paduntilleng(convnumer(ans, 2),"0",4)
         }
         let fullcode = (oppecode+reg1code+reg2code+reg3code).split("")
+        for (let i = 0; i < fullcode.length; i++) {
+            fullcode[i]=fullcode[i]*1 //turn into integers
+        }
         console.log(bindisphx(fullcode));
         mechcode.push(fullcode)
     }
@@ -318,8 +324,21 @@ var anddress_memory = []
 
 function run_program() {
     let p10b = 0
-    for (let i = 0; i < anddress_memory.length; i++) {
-        control_rom(anddress_memory[i])
+    compu_pntr = [[0,0,0,0,0,0,0,0]]
+    let unhalted = 1
+    while (unhalted==1) {
+        let pntr1 = compu_pntr.pop()
+        let pntrnum = 0
+        for (let i = 0; i < pntr1.length; i++) {
+            pntrnum+=(pntr1[i]==1)?2**i:0
+        }
+        let m16b=anddress_memory[pntrnum]
+        control_rom(m16b)
+        if (pntr1==anddress_memory.length) {
+            unhalted = 0
+        }
+        pntr1=alu_8b(pntr1,[0,0,0,0,0,0,0,1],[0,0,0,0,0,0,0,0.0],pntr1)
+        compu_pntr.push(pntr1)
     }
     // console.log(cache_register);
     printreg(cache_register)
