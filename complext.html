@@ -1,0 +1,89 @@
+<canvas id="canvas" width="200" height="200"></canvas>
+<script type="text/javascript" charset="utf-8">
+function imag(cnum1) {
+    return Math.sqrt(cnum1[0]*cnum1[0]+cnum1[1]*cnum1[1])
+}
+function imas(cnum1,cnum2) {
+  return [cnum1[0]+cnum2[0],cnum1[1]+cnum2[1]]
+}
+    
+function imul(cnum1,cnum2) {
+  let comps = [
+      cnum1[0]*cnum2[0],
+      cnum1[1]*cnum2[0],
+      cnum1[0]*cnum2[1],
+      cnum1[1]*cnum2[1]]
+  return [comps[0]-comps[3],comps[1]-comps[2]]
+}
+
+const im = [0,1]
+var canvas = document.getElementById("canvas")
+var contxt = canvas.getContext("2d")
+
+setTimeout(main,50)
+var wh = [200,200]
+var zm = [5,5]
+
+function main() {
+    contxt.fillStyle = "#000"
+    contxt.fillRect(0,0,wh[0],wh[1])
+    canvas.width =wh[0]
+    canvas.height=wh[1]
+    contxt.fillStyle = "#fff"
+    let j = 0
+    while (j<wh[1]) {
+        let i = 0
+        while (i<wh[0]) {
+            let ctron = [(i-wh[0])/wh[0]*zm[0],(j-wh[1])/wh[1]*zm[1]]
+            let ztron = [0,0]
+                        
+            if (imag(ctron)<6000) {
+                console.log(i+";"+j+" ans:"+imag(ctron))
+                contxt.fillRect(i,j,1,1)
+                break
+            }
+            
+            let it = 0
+            while (it<2) {
+                ztron = imas(ctron,imul(ztron,ztron))
+                it++
+            }
+
+            console.log(ctron,ztron)
+            i++
+        }
+        j++
+    }
+    let ans = ctronfunk([-1,0],5)
+    console.log(ans)
+    var anss1 = ans[1]
+}
+
+function ctronfunk(ctron,itr) {
+    let i=0
+    let ztron = [0,0]
+    let anss = [ztron]
+    while (i<itr) {
+        console.log(ztron,ctron)
+        ztron = imas(ctron,imul(ztron,ztron))
+        if (isin(ztron,anss)==1) {
+            return anss.length
+        } else {
+            anss.push(ztron)
+        }
+        i++
+    }
+    return [ztron,anss]
+}
+
+function isin(el,arr) {
+    let i = 0
+    while (i<arr.length) {
+        if (arr[i]==el) {
+            return 1
+        }
+        i++
+    }
+    return 0
+}
+</script>
