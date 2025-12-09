@@ -35,15 +35,15 @@ var contxt = canvas.getContext("2d")
 setTimeout(main,50)
 var wihi = [200,200]
 var zumu = [1,1]
-var ceta = [-.75,0.1]
+var ceta = [-0.744526939085,0.100051327305]
 var qule = 640
 
 function main() {
     let zmcoefft = 5
-    for (let i = 0; i < 10; i++) {
-        zmcoefft=zmcoefft/2
+    for (let i = 0; i < 109; i++) {
+        zmcoefft=zmcoefft*.8
         zumu = [zmcoefft,zmcoefft]
-        setTimeout(render,i*100,wihi,zumu,ceta,qule)
+        setTimeout(render,i*200,wihi,zumu,ceta,qule)
     }
 }
 
@@ -55,12 +55,7 @@ function render(wh,zm,ct,ql) {
         let ansrw = []
         for (let i = 0; i < wh[0]; i++) {
             let ctron = [(i-wh[0])*zm[0]/wh[0]+zm[0]*.5+ct[0],(j-wh[1])*zm[1]/wh[1]+zm[1]*.5-ct[1]]
-            let ztron = [0,0]
-            ansrw.push(ztronfunk(ctron,ql))
-            // if (!imag(ztron)>100) {
-            //     contxt.fillRect(i,j,1,1)
-            //     console.log(i+";"+j+" ctron:"+imag(ctron)+" ans:"+imag(ctron))
-            // }
+            ansrw.push(ztronfunk(ctron,ql,16))
         }   
         ansar.push(ansrw)
     }
@@ -69,14 +64,8 @@ function render(wh,zm,ct,ql) {
     contxt.fillRect(0,0,wh[0],wh[1])
     for (let j = 0; j < wh[1]; j++) {
         for (let i = 0; i < wh[0]; i++) {
-            let compr = ansar[j][i][3]
+            let compr = ansar[j][i][0]
             contxt.fillStyle = "#444"
-            // if (10*((i-wh[0])*zm[0]/wh[0] + zm[0]/2 + ct[0])%10==0) {
-            //     contxt.fillStyle = "#0f0"
-            // }
-            // if (10*((j-wh[1])*zm[1]/wh[1] + zm[1]/2 + ct[1])%10==0) {
-            //     contxt.fillStyle = "#f00"
-            // }
             if (compr>ql/8) {
                 contxt.fillStyle = "#888"
             }
@@ -87,22 +76,6 @@ function render(wh,zm,ct,ql) {
                 contxt.fillStyle = "#fff"
             }
             if (compr>0) {
-                contxt.fillRect(i,j,1,1)
-            }
-
-            compr=ansar[j][i][4]
-            contxt.fillStyle = "#400"
-            
-            if (compr>ql/8) {
-                contxt.fillStyle = "#800"
-            }
-            if (compr>ql/4) {
-                contxt.fillStyle = "#b00"
-            }
-            if (compr>ql/2) {
-                contxt.fillStyle = "#f00"
-            }
-            if (ansar[j][i][3]==0) {
                 contxt.fillRect(i,j,1,1)
             }
         }   
