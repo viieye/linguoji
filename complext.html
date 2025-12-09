@@ -1,5 +1,10 @@
-<canvas id="canvas" width="200" height="200"></canvas>
+<body style="background-color: #222;">
+    <canvas id="canvas" width="200" height="200"></canvas>
+</body>
 <script type="text/javascript" charset="utf-8">
+function isiz(cnum1) {
+    return Math.abs(cnum1[0]+cnum1[1])
+}
 function imag(cnum1) {
     return Math.sqrt(cnum1[0]*cnum1[0]+cnum1[1]*cnum1[1])
 }
@@ -13,7 +18,14 @@ function imul(cnum1,cnum2) {
       cnum1[1]*cnum2[0],
       cnum1[0]*cnum2[1],
       cnum1[1]*cnum2[1]]
-  return [comps[0]-comps[3],comps[1]-comps[2]]
+  return [comps[0]-comps[3],comps[1]+comps[2]]
+}
+    
+function iqua(cnum1,cnum2) {
+    if (cnum1[0]==cnum2[0]&&cnum1[1]==cnum2[1]) {
+        return 1
+    }
+    return 0
 }
 
 const im = [0,1]
@@ -21,68 +33,116 @@ var canvas = document.getElementById("canvas")
 var contxt = canvas.getContext("2d")
 
 setTimeout(main,50)
-var wh = [200,200]
-var zm = [5,5]
+var wihi = [200,200]
+var zumu = [1,1]
+var ceta = [-.75,0.1]
+var qule = 640
 
 function main() {
-    contxt.fillStyle = "#000"
-    contxt.fillRect(0,0,wh[0],wh[1])
+    let zmcoefft = 5
+    for (let i = 0; i < 10; i++) {
+        zmcoefft=zmcoefft/2
+        zumu = [zmcoefft,zmcoefft]
+        setTimeout(render,i*100,wihi,zumu,ceta,qule)
+    }
+}
+
+function render(wh,zm,ct,ql) {
     canvas.width =wh[0]
     canvas.height=wh[1]
-    contxt.fillStyle = "#fff"
-    let j = 0
-    while (j<wh[1]) {
-        let i = 0
-        while (i<wh[0]) {
-            let ctron = [(i-wh[0])/wh[0]*zm[0],(j-wh[1])/wh[1]*zm[1]]
+    let ansar = []
+    for (let j = 0; j < wh[1]; j++) {
+        let ansrw = []
+        for (let i = 0; i < wh[0]; i++) {
+            let ctron = [(i-wh[0])*zm[0]/wh[0]+zm[0]*.5+ct[0],(j-wh[1])*zm[1]/wh[1]+zm[1]*.5-ct[1]]
             let ztron = [0,0]
-                        
-            if (imag(ctron)<6000) {
-                console.log(i+";"+j+" ans:"+imag(ctron))
-                contxt.fillRect(i,j,1,1)
-                break
+            ansrw.push(ztronfunk(ctron,ql))
+            // if (!imag(ztron)>100) {
+            //     contxt.fillRect(i,j,1,1)
+            //     console.log(i+";"+j+" ctron:"+imag(ctron)+" ans:"+imag(ctron))
+            // }
+        }   
+        ansar.push(ansrw)
+    }
+    // console.log(ansar)
+    contxt.fillStyle = "#000"
+    contxt.fillRect(0,0,wh[0],wh[1])
+    for (let j = 0; j < wh[1]; j++) {
+        for (let i = 0; i < wh[0]; i++) {
+            let compr = ansar[j][i][3]
+            contxt.fillStyle = "#444"
+            // if (10*((i-wh[0])*zm[0]/wh[0] + zm[0]/2 + ct[0])%10==0) {
+            //     contxt.fillStyle = "#0f0"
+            // }
+            // if (10*((j-wh[1])*zm[1]/wh[1] + zm[1]/2 + ct[1])%10==0) {
+            //     contxt.fillStyle = "#f00"
+            // }
+            if (compr>ql/8) {
+                contxt.fillStyle = "#888"
             }
-            
-            let it = 0
-            while (it<2) {
-                ztron = imas(ctron,imul(ztron,ztron))
-                it++
+            if (compr>ql/4) {
+                contxt.fillStyle = "#bbb"
+            }
+            if (compr>ql/2) {
+                contxt.fillStyle = "#fff"
+            }
+            if (compr>0) {
+                contxt.fillRect(i,j,1,1)
             }
 
-            console.log(ctron,ztron)
-            i++
-        }
-        j++
+            compr=ansar[j][i][4]
+            contxt.fillStyle = "#400"
+            
+            if (compr>ql/8) {
+                contxt.fillStyle = "#800"
+            }
+            if (compr>ql/4) {
+                contxt.fillStyle = "#b00"
+            }
+            if (compr>ql/2) {
+                contxt.fillStyle = "#f00"
+            }
+            if (ansar[j][i][3]==0) {
+                contxt.fillRect(i,j,1,1)
+            }
+        }   
     }
-    let ans = ctronfunk([-1,0],5)
-    console.log(ans)
-    var anss1 = ans[1]
 }
 
-function ctronfunk(ctron,itr) {
-    let i=0
+function ctronfunk(ctron,itr,max) {
     let ztron = [0,0]
     let anss = [ztron]
-    while (i<itr) {
-        console.log(ztron,ctron)
-        ztron = imas(ctron,imul(ztron,ztron))
-        if (isin(ztron,anss)==1) {
-            return anss.length
-        } else {
+    for (let i = 0; i < itr; i++) {
+        // console.log(ztron,ctron)
+        let candt = imas(ctron,imul(ztron,ztron)) 
+        if (max<isiz(candt)) {
+            return [ztron,anss,imag(ztron),0,itr]
+        }
+        ztron = candt
+        if (isin(ztron,anss)==0) {
             anss.push(ztron)
         }
-        i++
     }
-    return [ztron,anss]
+    return [ztron,anss,imag(ztron),itr-anss.length,0]
 }
 
-function isin(el,arr) {
-    let i = 0
-    while (i<arr.length) {
-        if (arr[i]==el) {
-            return 1
+function ztronfunk(ctron,itr,max) {
+    let ztron = [0,0]
+    let anss = [ztron]
+    for (let i = 0; i < itr; i++) {
+        // console.log(ztron,ctron)
+        let candt = [ztron[0]**2-ztron[1]**2+ctron[0],2*ztron[0]*ztron[1]+ctron[1]]
+        ztron = candt
+        if (isiz(ztron)>max) {
+            return [i]
         }
-        i++
+    }
+    return [itr]
+}
+
+function isin(el,arr,verbozze) {
+    for (let i = 0; i < arr.length; i++) {
+        if (iqua(arr[i],el)==1) { return 1 }
     }
     return 0
 }
