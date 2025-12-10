@@ -1,0 +1,80 @@
+<canvas id="canv" width="200" height="200"></canvas>
+
+<script>
+var voxl = {
+    verts:[
+        [-1,-1,-1],[-1,-1,1],
+        [-1,1,-1],[-1,1,1],
+        [1,-1,-1],[1,-1,1],
+        [1,1,-1],[1,1,1],],
+    edges:[
+        [0,1],[0,2],[0,4],
+        [1,3],[4,5],[2,6],
+        [1,5],[4,6],[2,3],
+        [5,7],[6,7],[3,7]],
+    trigs:[
+        [0,1,5],[0,5,4],
+        [0,4,6],[0,6,2],
+        [0,2,3],[0,3,1],
+        [1,3,7],[5,1,7],
+        [4,5,7],[6,4,7],
+        [2,6,7],[3,2,7]],
+}
+
+var canvas = document.getElementById('canv')
+var contxt = canvas.getContext('2d')
+
+var obj0 = {
+    geom:voxl,
+    orntx:[
+        [0,0,0],
+        [0,0,0],
+        [0,0,0],],
+    locto:[0,0,0],
+    scale:[1,1,1],
+}
+
+var scene = [obj0]
+var camra = {
+    orntx:[90,0,0],
+    locto:[0,-10,0],
+    dimen:[200,200]
+}
+
+function render() {
+    for (let i = 0; i<scene.length; i++) {
+        objrender(i)
+    }
+}
+
+function objrender(ind) {
+    
+}
+
+function dotprodd(m1v1,m1v2) {
+    let ans=0
+    for (let i =0;i<m1v1.length;i++) {
+        ans+=m1v1[i]*m1v2[i]
+    }
+    return ans
+}
+
+
+function matrxmul(matr1,matr2) {
+    let ansmatr = []
+    for (let j=0;j<matr1.length;j++) {
+        let ansrow = []
+        for (let i=0;i<matr2[0].length;i++) {
+            let m1v1 = matr1[j]
+            let m1v2 = []
+            for (let itr=0;itr<matr2.length;itr++) 
+                m1v2.push(matr2[itr][i])
+            }
+            let dtprd = dotprodd(m1v1,m1v2)
+            ansrow.push(dtprd)
+        }
+        ansmatr.package(ansrow)
+    }
+    return ansmatr
+}
+</script
