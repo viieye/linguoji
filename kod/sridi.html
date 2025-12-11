@@ -1,6 +1,8 @@
-<canvas id="canv" width="200" height="200"></canvas>
+<body style="background-color: #222;">
+    <canvas id="canv" width="200" height="200"></canvas>
+</body>
 
-<script>
+<script type="text/javascript" charset="utf-8">
 var voxl = {
     verts:[
         [-1,-1,-1],[-1,-1,1],
@@ -26,19 +28,17 @@ var contxt = canvas.getContext('2d')
 
 var obj0 = {
     geom:voxl,
-    orntx:[
-        [0,0,0],
-        [0,0,0],
-        [0,0,0],],
+    orntx:[0,0,45],
     locto:[0,0,0],
     scale:[1,1,1],
 }
 
 var scene = [obj0]
 var camra = {
-    orntx:[90,0,0],
-    locto:[0,-10,0],
-    dimen:[200,200]
+    orntx:[-90,0,0],
+    locto:[0,0,-5],
+    dimen:[200,200],
+    aptrz:[5,5]
 }
 
 function render() {
@@ -48,7 +48,39 @@ function render() {
 }
 
 function objrender(ind) {
-    
+    let objgeo = scene[ind].geom
+    for (let i = 0; i < objgeo.verts.length; i++) {
+        let vert = trans([objgeo.verts[i]])
+
+        let mtrsc = [
+            [scene[ind].scale[0],0,0],
+            [0,scene[ind].scale[1],0],
+            [0,0,scene[ind].scale[2]],]
+        vert = matrxmul(mtrsc,vert)
+
+        vert = matrxmul(rot2matr(scene[ind].orntx,1),vert)
+        vert = matrxadd(vert,trans([scene[ind].locto]))
+
+        vert = matrxadd(
+            matrxmul([
+                [-1,0,0],
+                [0,-1,0],
+                [0,0,-1]],
+            trans([camra.locto]),),
+        vert)
+        vert = matrxmul(rot2matr(camra.orntx,1),vert)
+        // vert = matrxmul([[1,0,0],[0,1,0],[0,0,0]],vert)
+        
+        console.log(trans(vert)[0]);
+        
+        let vertx = vert[0]*camra.dimen[0]/Math.sqrt(vert[2])/camra.aptrz[0]+camra.dimen[0]/2
+        let verty = vert[1]*camra.dimen[1]/Math.sqrt(vert[2])/camra.aptrz[1]+camra.dimen[1]/2
+
+        contxt.fillStyle = "#fff"
+        contxt.fillRect(vertx,verty,10,10)
+        console.log(vertx,verty);
+        
+    }   
 }
 
 function dotprodd(m1v1,m1v2) {
@@ -59,22 +91,76 @@ function dotprodd(m1v1,m1v2) {
     return ans
 }
 
+function trans(m1) {
+    let ansmatr = []
+    for (let i=0;i<m1[0].length;i++) {
+        let anscol = []
+        for (let itr = 0; itr < m1.length; itr++) {
+            anscol.push(m1[itr][i])
+        }
+        ansmatr.push(anscol)
+    }
+    return ansmatr
+}
+
+function matrxadd(matr1,matr2) {
+    console.log(matr1,matr2);
+    let ansmatr = []
+    for (let j=0;j<matr1.length;j++) {
+        let ansrow = []
+        for (let i=0;i<matr1[j].length;i++) {
+            ansrow.push(matr1[j][i]+matr2[j][i])
+        }
+        ansmatr.push(ansrow)
+    }
+    console.log(ansmatr,matr1,matr2);
+    
+    return ansmatr
+}
 
 function matrxmul(matr1,matr2) {
+    console.log(matr1,matr2);
+    
     let ansmatr = []
     for (let j=0;j<matr1.length;j++) {
         let ansrow = []
         for (let i=0;i<matr2[0].length;i++) {
             let m1v1 = matr1[j]
             let m1v2 = []
-            for (let itr=0;itr<matr2.length;itr++) 
+            for (let itr=0;itr<matr2.length;itr++) {
                 m1v2.push(matr2[itr][i])
             }
             let dtprd = dotprodd(m1v1,m1v2)
             ansrow.push(dtprd)
         }
-        ansmatr.package(ansrow)
+        ansmatr.push(ansrow)
     }
     return ansmatr
 }
-</script
+
+function rot2matr(xyzmatr,isdeg) {
+    
+    let rx = (isdeg==1)?Math.PI*(xyzmatr[0])%360/180:xyzmatr[0]
+    let ry = (isdeg==1)?Math.PI*(xyzmatr[1])%360/180:xyzmatr[1]
+    let rz = (isdeg==1)?Math.PI*(xyzmatr[2])%360/180:xyzmatr[2]
+
+    console.log(xyzmatr,rx,ry,rz);
+
+    function c(rad) {return Math.cos(rad)}
+    function s(rad) {return Math.sin(rad)}
+
+    let rtxmt = [
+        [c(rx),-s(rx),0],
+        [s(rx),c(rx),0],
+        [0,0,1],]
+    let rtymt = [
+        [c(ry),0,s(ry)],
+        [0,1,0],
+        [-s(ry),0,c(ry)],]
+    let rtzmt = [
+        [1,0,0],
+        [0,c(rz),-s(rz)],
+        [0,s(rz),c(rz)],]
+    return matrxmul(matrxmul(rtxmt,rtymt),rtzmt)
+}
+</script>
