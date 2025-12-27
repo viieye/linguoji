@@ -65,15 +65,15 @@ var flor = {
     colr:[360,0,50,100,0],
     orntx:[0,0,0],
     locto:[0,0,-1],
-    scale:[5,5,1],
+    scale:[1,1,1],
 }
 
 var scene = [flor,obj1,obj2,obj0,]
 // var scene = [obj0,]
 var camra = {
     // orntx:[-90,0,45],
-    orntx:[-90,0,10],
-    locto:[0,-4,0],
+    orntx:[-90,0,0],
+    locto:[0,-1,0],
     dimen:[1000,800],
     aptrz:[8,8]
 }
@@ -89,7 +89,7 @@ function render() {
 
 function objrender(ind) {
     let objgeo = scene[ind].geom
-    contxt.textAlign = "center";
+    // contxt.textAlign = "center";
     contxt.textBaseline = "middle";
     for (let i = 0; i < objgeo.trigs.length; i++) {
         let worktrig = objgeo.trigs[i]
@@ -138,16 +138,18 @@ function objrender(ind) {
     }
     for (let i = 0; i < objgeo.verts.length; i++) {
         let vert = convvert(trans([objgeo.verts[i]]),ind)
+        let dvert = [Math.floor(vert[0]*10)/10,Math.floor(vert[1]*10)/10,Math.floor(vert[2]*10)/10,]
         let vertr = camcnvrt(vert)
         contxt.fillStyle="#0ff"
-        contxt.fillText([ind,i].toString(),vertr[0],vertr[1])
+        contxt.fillText([ind,i].toString(),vertr[0],vertr[1]-4)
+        contxt.fillText(dvert.toString(),vertr[0],vertr[1]+4)
     }
 }
 
 // setInterval(main,100)
 function main() {
     render()
-    scene[1].orntx[2]+=10
+    scene[3].orntx[2]+=10
     // camra.orntx[2]+=-9
 }
 
@@ -167,10 +169,21 @@ function convvert(vert3,ind) {
 }
 
 function camcnvrt(vert3) {
-    let zval = -vert3[2][0]
-    let vertx = vert3[0][0]*camra.dimen[0]/Math.sqrt(zval)/camra.aptrz[0]+camra.dimen[0]/2
-    let verty = camra.dimen[1]-vert3[1][0]*camra.dimen[1]/Math.sqrt(zval)/camra.aptrz[1]-camra.dimen[1]/2
-    return [vertx,verty]
+    // let zval = -vert3[2][0]
+    // let zval = (-vert3[2][0]>0)?-vert3[2][0]:undefined
+    let zval = Math.sqrt(-vert3[2][0])
+    let vertx = vert3[0][0]*camra.dimen[0]/zval/camra.aptrz[0]+camra.dimen[0]/2
+    let verty = camra.dimen[1]-vert3[1][0]*camra.dimen[1]/zval/camra.aptrz[1]-camra.dimen[1]/2
+    return [Math.floor(vertx),Math.floor(verty)]
+}
+
+function trigintersect(rayvect,trigarray) {
+    let vect0 = trigarray[0]
+    let vect1 = trigarray[1]
+    let vect2 = trigarray[2]
+
+    let nrmvc = crsprodd(matrxadd(vect0,vect1,0,1),matrxadd(vect0,vect2,0,1),)
+
 }
 
 function crsprodd(matr1,matr2) {
@@ -182,12 +195,24 @@ function crsprodd(matr1,matr2) {
     return matrxmul(calkmatr,matr2)
 }
 
+function vectrsiz(arr) {
+    let sum = 0
+    for (let i = 0; i < arr.length; i++) {
+        sum+=arr[i]*arr[i]
+    }
+    return Math.sqrt(sum)
+}
+
 function dotprodd(m1v1,m1v2) {
     let ans=0
     for (let i =0;i<m1v1.length;i++) {
         ans+=m1v1[i]*m1v2[i]
     }
     return ans
+}
+
+function projprod(v1,v2) {
+    
 }
 
 function trans(m1) {
@@ -260,7 +285,7 @@ function rot2matr(xyzmatr,isdeg) {
         [cos[2],-sin[2],0],
         [sin[2],cos[2],0],
         [0,0,1],]
-    return matrxmul(matrxmul(rtxmt,rtymt),rtzmt,)
+    return matrxmul(matrxmul(rtzmt,rtymt),rtxmt,)
 }
 
 function matrxnrm(matrx) {
